@@ -8,6 +8,7 @@ import CamSetup from './pages/CamSetup/CamSetup.jsx';
 import NavBar from './Components/NavBar/index.jsx'
 
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
+import PlayingPage from './pages/PlayingPage/PlayingPage.jsx';
 
 
 function App() {
@@ -22,6 +23,7 @@ function App() {
           <Route path="/" element={<LandingPage />} />
           <Route path="/song-select" element={<SongPage />} />
           <Route path="/cam" element={<CamSetup />}/>
+          <Route path="/sheet-view" element={<PlayingPage />}/>
         </Routes>
       </BrowserRouter>
     </>

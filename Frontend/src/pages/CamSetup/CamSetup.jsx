@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import DropDown from "../../Components/DropDown";
+import { ThreeDots } from "react-loader-spinner";
 
 export default function CameraSetupPage() {
   const videoRef = useRef(null);
@@ -88,7 +88,6 @@ export default function CameraSetupPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 max-w-6xl w-full">
 
-        {/* Camera Feed Panel */}
         <div className="bg-white rounded-2xl shadow-md border border-[#D4EEF7] p-6 flex flex-col items-center">
           <h2 className="text-2xl font-semibold text-[#1F8AAD] mb-4">
             Camera Preview
@@ -101,7 +100,13 @@ export default function CameraSetupPage() {
               style={{ transform: "scaleX(-1)" }}
             />
             {loading && (
-              <p className="absolute text-lg text-[#1F8AAD] font-bold">Loading...</p>
+              <div className="justify-center absolute">
+              <ThreeDots
+                height="80"
+                width="80"
+                color="#1F8AAD"
+              />
+              </div>
             )}
           </div>
 
@@ -128,7 +133,6 @@ export default function CameraSetupPage() {
           </div>
         </div>
 
-        {/* Instructions + Status Panel */}
         <div className="bg-white rounded-2xl shadow-md border border-[#D4EEF7] p-6 flex flex-col justify-between">
 
           <div>
