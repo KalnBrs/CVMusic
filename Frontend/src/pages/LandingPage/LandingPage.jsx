@@ -6,8 +6,8 @@ export default function LandingPage() {
     </h1>
 
 
-    <div className="w-full max-w-3xl h-64 rounded-2xl bg-[#A8DEF0] border border-[#7DCDE8] shadow-xl flex items-center justify-center mb-10">
-      <span className="text-[#A1A1AA] text-lg">Guitar Illustration Placeholder</span>
+    <div className=" max-w-3xl p-2 rounded-2xl bg-[#A8DEF0] border border-[#7DCDE8] shadow-xl flex items-center justify-center mb-10">
+      <img src="/raf,360x360,075,t,fafafa_ca443f4786.u7.jpg" alt="" />
     </div>
 
 
@@ -15,8 +15,7 @@ export default function LandingPage() {
       Learn guitar with <span className="text-[#1F8AAD] font-semibold">real-time AI feedback</span>, live finger tracking, and synced music sheets.
     </p>
 
-
-    <button className="bg-gradient-to-r from-[#26ACD9] to-[#00D4FF] text-white text-lg font-medium px-10 py-3 rounded-full shadow-lg hover:opacity-90 active:scale-95 transition-all">
+    <button className="bg-linear-to-r from-[#26ACD9] to-[#00D4FF] text-white text-lg font-medium px-10 py-3 rounded-full shadow-lg hover:opacity-90 active:scale-95 transition-all">
       <a href="/song-select">Start Playing ▶</a>
     </button>
   </div>

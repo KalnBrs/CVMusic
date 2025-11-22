@@ -22,7 +22,7 @@ export default function SongPage() {
         <div className="justify-self-end">
         <DropDown
           name="Difficulty"
-          listOfOptions={["Easy", "Intermediate", "Hard"]}
+          listOfOptions={["Any", "Easy", "Intermediate", "Hard"]}
         />
         </div>
       </div>

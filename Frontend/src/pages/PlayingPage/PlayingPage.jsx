@@ -92,14 +92,14 @@ export default function PlayingPage({ song }) {
           </div>
 
           <div className="mt-6 flex justify-center items-center">
-            <button className="px-6 py-3 bg-gradient-to-r from-[#26ACD9] to-[#00D4FF] text-white rounded-full hover:opacity-90 active:scale-95 transition-all" style={{ transform: "scaleX(-1)" }}>
+            <button className="px-6 py-3 bg-linear-to-r from-[#26ACD9] to-[#00D4FF] text-white rounded-full hover:opacity-90 active:scale-95 transition-all" style={{ transform: "scaleX(-1)" }}>
               <img src="/fast-forward.png" alt="" className="w-5 h-5" />
             </button>
             <button onClick={() => setPaused(!paused)} className="px-6 py-3 text-white rounded-full hover:scale-[1.05] active:scale-95 transition-all">
               {paused ? (<img src="/pause.png" className="w-5 h-5" />) : (<img src="/play-button-arrowhead.png" className="w-5 h-5" />)}
               {/* Play and pause  */}
             </button>
-            <button className="px-6 py-3 bg-gradient-to-r from-[#26ACD9] to-[#00D4FF] text-white rounded-full shadow-lg hover:opacity-90 active:scale-95 transition-all">
+            <button className="px-6 py-3 bg-linear-to-r from-[#26ACD9] to-[#00D4FF] text-white rounded-full shadow-lg hover:opacity-90 active:scale-95 transition-all">
               <img src="/fast-forward.png" alt="" className="w-5 h-5" />
             </button>
           </div>

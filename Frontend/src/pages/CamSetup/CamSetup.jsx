@@ -115,7 +115,7 @@ export default function CameraSetupPage() {
           <div className="flex flex-row justify-between w-full items-center mt-6">
             <button
               onClick={getVideo}
-              className=" px-6 py-3 bg-gradient-to-r from-[#26ACD9] to-[#00D4FF] text-white rounded-full text-lg font-medium shadow-lg hover:opacity-90 active:scale-95 transition-all"
+              className=" px-6 py-3 bg-linear-to-r from-[#26ACD9] to-[#00D4FF] text-white rounded-full text-lg font-medium shadow-lg hover:opacity-90 active:scale-95 transition-all"
             >
               Turn On Camera
             </button>
@@ -186,7 +186,7 @@ export default function CameraSetupPage() {
 
           <a
             href="/sheet-view"
-            className="mt-10 w-full text-center bg-gradient-to-r from-[#26ACD9] to-[#00D4FF] text-white px-8 py-3 rounded-full text-lg shadow-lg hover:opacity-90 active:scale-95 transition-all"
+            className="mt-10 w-full text-center bg-linear-to-r from-[#26ACD9] to-[#00D4FF] text-white px-8 py-3 rounded-full text-lg shadow-lg hover:opacity-90 active:scale-95 transition-all"
           >
             Continue ▶
           </a>
