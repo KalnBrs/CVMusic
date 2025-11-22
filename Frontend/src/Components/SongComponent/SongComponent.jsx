@@ -34,7 +34,7 @@ export default function SongComponent({
           </span>
         </div>
         <button className="bg-[#176782] px-3 py-2 rounded-2xl text-[#E9F7FB] hover:bg-[#26ACD9] transition duration-300 ease-in-out">
-          <a href="">Play Song</a>
+          <a href="/cam">Play Song</a>
         </button>
       </div>
     </div>

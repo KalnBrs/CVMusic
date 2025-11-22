@@ -3,6 +3,7 @@ import './App.css'
 
 import LandingPage from './pages/LandingPage/LandingPage.jsx';
 import SongPage from './pages/SongPage/SongPage.jsx';
+import CamSetup from './pages/CamSetup/CamSetup.jsx';
 
 import NavBar from './Components/NavBar/index.jsx'
 
@@ -20,7 +21,7 @@ function App() {
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/song-select" element={<SongPage />} />
-
+          <Route path="/cam" element={<CamSetup />}/>
         </Routes>
       </BrowserRouter>
     </>
