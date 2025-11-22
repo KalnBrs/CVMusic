@@ -21,7 +21,7 @@ export default function LandingPage() {
 
     {/* Start Button */}
     <button className="bg-gradient-to-r from-[#26ACD9] to-[#00D4FF] text-white text-lg font-medium px-10 py-3 rounded-full shadow-lg hover:opacity-90 active:scale-95 transition-all">
-      Start Playing ▶
+      <a href="/song-select">Start Playing ▶</a>
     </button>
   </div>
   );
