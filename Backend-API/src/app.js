@@ -16,7 +16,8 @@ app.use(cors({
 
 const songRoute = require('./Routes/song')
 app.use("/api/songs", songRoute)
-// const chordRoute = require('./Routes/chord')
+const chordRoute = require('./Routes/chord')
+app.use("/api/chords", chordRoute)
 
 app.get('/', (req, res) => {
   res.send('Welcome to the API')

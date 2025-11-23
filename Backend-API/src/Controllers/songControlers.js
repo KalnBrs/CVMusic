@@ -12,6 +12,18 @@ const findSongId = async (req, res, next, value) => {
   }
 }
 
+const findChordSongId = async (req, res, next, value) => {
+  try {
+    const result = await pool.query('SELECT * FROM song_chords WHERE song_id = $1', [value])
+    if (result.rows.length === 0) return res.sendStatus(404)
+    req.chords = result.rows
+    next()
+  } catch (err) {
+    console.log(err)
+    res.sendStatus(500)
+  }
+}
+
 const getAllSongs = async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM songs;')
@@ -23,4 +35,4 @@ const getAllSongs = async (req, res) => {
   }
 }
 
-module.exports = { getAllSongs, findSongId }
+module.exports = { getAllSongs, findSongId, findChordSongId }

@@ -1,10 +1,13 @@
-// const express = require('express');
+const express = require('express');
+const { findChordSongId } = require('../Controllers/songControlers');
 
-// const router = express.Router();
-// router.use(express.json())
+const router = express.Router();
+router.use(express.json())
 
-// router.get('/', (req, res) => {
-//   // Get one song
-// })
+router.param('id', findChordSongId) 
 
-// module.exports = router;
+router.get('/:id', (req, res) => {
+  res.json(req.chords)
+})
+
+module.exports = router;
