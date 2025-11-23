@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { ThreeDots } from "react-loader-spinner";
 
-export default function CameraSetupPage() {
+export default function CameraSetupChordsPage() {
   const videoRef = useRef(null);
   const [cameraStatus, setCameraStatus] = useState("Not Connected");
 
@@ -185,10 +185,10 @@ export default function CameraSetupPage() {
           </div>
           
           <a
-            href={`/sheet-view`}
+            href={`/chords`}
             className="mt-10 w-full text-center bg-linear-to-r from-[#26ACD9] to-[#00D4FF] text-white px-8 py-3 rounded-full text-lg shadow-lg hover:opacity-90 active:scale-95 transition-all"
           >
-            Continue To Song ▶
+            Continue To Chords ▶
           </a>
         </div>
       </div>
