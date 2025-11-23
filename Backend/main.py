@@ -1,4 +1,4 @@
-from fastapi import FastAPI, UploadFile, File
+from fastapi import FastAPI, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
 import cv2
 import numpy as np
@@ -17,11 +17,11 @@ app.add_middleware(
 )
 
 @app.post("/api/process_frame")
-async def process_frame(frame: UploadFile = File(...), chord_tab: str = '["0", "2", "2", "1", "0", "0"]'):
+async def process_frame(frame: UploadFile = File(...),
+    chord_tab: str = Form(None)):
+    
+    print("Received file:", frame.filename)
     print("Received chord tab:", chord_tab)
-
-
-    """
 
     data = await frame.read()
     nparr = np.frombuffer(data, np.uint8)
@@ -50,7 +50,6 @@ async def process_frame(frame: UploadFile = File(...), chord_tab: str = '["0", "
             continue
 
     return {"notes": positions}
-    """
 
 if __name__ == "__main__":
     import uvicorn
