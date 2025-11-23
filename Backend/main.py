@@ -3,7 +3,8 @@ from fastapi.middleware.cors import CORSMiddleware
 import cv2
 import numpy as np
 import base64
-from NotePositions.Vector2 import Vector2
+from FretboardDetection.GetFretboardCorners import get_fretboard_corners
+from Vector2 import Vector2
 from NotePositions.GetNotePosition import get_chord_positions
 import json
 
@@ -37,16 +38,13 @@ async def process_frame(frame: UploadFile = File(...),
     nparr = np.frombuffer(data, np.uint8)
     img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
 
-    # Get corners of fretboard (stubbed for now)
-    c1 = Vector2(100, 100)
-    c2 = Vector2(500, 100)
-    c3 = Vector2(80, 400)
-    c4 = Vector2(520, 400)
+    corners = get_fretboard_corners(img)
+
+    if not corners:
+        return {"error": "No fretboard corners detected."}
 
     # Get note positions for the chord
-    notes = get_chord_positions(chord_tab_list, c1, c2, c3, c4)
-
-    print(notes)
+    notes = get_chord_positions(chord_tab_list, corners[0], corners[1], corners[2], corners[3])
 
     positions = []
     for note in notes:

@@ -1,5 +1,5 @@
 from PIL import Image, ImageDraw
-from NotePositions.Vector2 import Vector2
+from Vector2 import Vector2
 
 
 TAB_COLOR = (200, 200, 200)  # Light gray
