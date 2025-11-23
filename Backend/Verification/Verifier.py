@@ -1,6 +1,6 @@
 import math
 
-def verify_chord_placement(target_positions, detected_fingertips, threshold=40.0):
+def verify_chord_placement(target_positions, detected_fingertips, threshold=70.0):
     """
     Verify if detected fingertips match the target note positions.
     

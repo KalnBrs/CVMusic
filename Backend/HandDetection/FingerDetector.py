@@ -44,14 +44,13 @@ class FingerDetector:
         if results.multi_hand_landmarks and results.multi_handedness:
             h, w, _ = img.shape
             for hand_landmarks, handedness in zip(results.multi_hand_landmarks, results.multi_handedness):
-                # Filter for Left hand only
-                # Note: MediaPipe assumes the input image is mirrored by default if it's a selfie camera.
-                # Label "Left" corresponds to the person's left hand.
-                label = handedness.classification[0].label
-                if label != "Left":
-                    continue
+                # Removed strict Left hand filtering to accommodate different camera mirror settings
+                # and rely on fretboard region filtering in main.py instead.
+                # label = handedness.classification[0].label
+                # if label != "Left":
+                #    continue
 
-                print(f"✋ Left hand detected with {len(hand_landmarks.landmark)} landmarks")
+                print(f"✋ Hand detected with {len(hand_landmarks.landmark)} landmarks")
                 for idx in self.fingertip_ids:
                     lm = hand_landmarks.landmark[idx]
                     # Convert normalized coordinates to pixel coordinates

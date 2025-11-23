@@ -18,7 +18,7 @@ export default function LiveVideoPanel({ currCord }) {
   const [status, setStatus] = useState("Idle");
   const [frameCount, setFrameCount] = useState(0);
 
-  const FPS = 5; // throttled frames per second
+  const FPS = 10; // throttled frames per second
 
   // --- Initialize webcam safely ---
   useEffect(() => {
