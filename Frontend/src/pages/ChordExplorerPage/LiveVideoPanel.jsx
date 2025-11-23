@@ -7,12 +7,14 @@ export default function LiveVideoPanel({currCord}) {
   const intervalRef = useRef(null);
   const isSendingRef = useRef(false);
 
+  const [currSpots, setCurrSpots] = useState(null)
+
   const [testCounter, setCount] = useState(0)
 
   const [capturedImage, setCapturedImage] = useState(null);
   const [isActive, setIsActive] = useState(false);
   const [status, setStatus] = useState("Idle");
-  const FPS = 3; // throttled frames per second
+  const FPS = 5; // throttled frames per second
 
   // Initialize webcam
   useEffect(() => {
@@ -42,9 +44,11 @@ export default function LiveVideoPanel({currCord}) {
       setStatus("Sending...");
       try {
         const response = await captureAndSend(videoRef, canvasRef, setCapturedImage, currCord);
-        console.log("Positions:", response);
+        
         if (response?.status === 200) {
           setStatus("Received ✅");
+          setCurrSpots(await response.json())
+          console.log("Positions:", currSpots);
           setCount(testCounter + 1)
         } else {
           setStatus("Error ❌");
@@ -122,6 +126,7 @@ export default function LiveVideoPanel({currCord}) {
             alt="Captured frame"
             className="w-full rounded-xl shadow-md"
             onLoad={() => URL.revokeObjectURL(capturedImage)}
+            style={{ transform: "scaleX(-1)" }}
           />
         </div>
       )}
