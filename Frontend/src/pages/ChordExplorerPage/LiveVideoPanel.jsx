@@ -1,7 +1,7 @@
 import { useRef, useEffect, useState } from "react";
 import { captureAndSend } from "../../scripts/imageSend";
 
-export default function LiveVideoPanel() {
+export default function LiveVideoPanel({currCord}) {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const intervalRef = useRef(null);
@@ -41,7 +41,7 @@ export default function LiveVideoPanel() {
       isSendingRef.current = true;
       setStatus("Sending...");
       try {
-        const response = await captureAndSend(videoRef, canvasRef, setCapturedImage);
+        const response = await captureAndSend(videoRef, canvasRef, setCapturedImage, currCord);
         if (response?.status === 200) {
           setStatus("Received ✅");
           setCount(testCounter + 1)
@@ -84,9 +84,14 @@ export default function LiveVideoPanel() {
       </div>
 
       {/* Status text */}
-      <p className="mt-2 text-center text-gray-700 font-medium">
-        Status: <span className="font-bold text-[#1F8AAD]">{status}</span>
-      </p>
+      <div className="flex flex-row justify-center gap-4">
+        <p className="mt-2 text-center text-gray-700 font-medium">
+          Status: <span className="font-bold text-[#1F8AAD]">{status}</span>
+        </p>
+        <p className="mt-2 text-center text-gray-700 font-medium">
+          Current Cord: <span className="font-bold text-[#1F8AAD]">{currCord?.name} - {currCord?.variation}</span>
+        </p>
+      </div>
 
       <div className="mt-4 text-center space-x-4">
         {!isActive ? (
@@ -105,7 +110,6 @@ export default function LiveVideoPanel() {
           </button>
         )}
       </div>
-      <p>{testCounter}</p>
 
       {capturedImage && (
         <div className="mt-6">

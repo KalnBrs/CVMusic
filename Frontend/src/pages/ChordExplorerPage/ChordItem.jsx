@@ -1,7 +1,7 @@
 import { useState } from "react";
 import VariationItem from "./VariationItem";
 
-export default function ChordItem({ chord }) {
+export default function ChordItem({ chord, setCurrCord }) {
   const [expanded, setExpanded] = useState(false);
 
   return (
@@ -14,7 +14,7 @@ export default function ChordItem({ chord }) {
         <span className="text-2xl text-[#1F8AAD]">{expanded ? "−" : "+"}</span>
       </div>
 
-      {expanded && <div className="mt-6 space-y-4">{chord.variations.map(v => <VariationItem key={v.type} variation={v} />)}</div>}
+      {expanded && <div className="mt-6 space-y-4">{chord.variations.map(v => <VariationItem key={v.type} variation={v} chord={chord} setCurrCord={setCurrCord} />)}</div>}
     </div>
   );
 }

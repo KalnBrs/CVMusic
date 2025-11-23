@@ -1,7 +1,7 @@
 import { useState } from "react";
 import FretboardDiagram from "./FretboardDiagram";
 
-export default function VariationItem({ variation }) {
+export default function VariationItem({ variation, chord, setCurrCord }) {
   const [expanded, setExpanded] = useState(false);
 
   return (
@@ -15,6 +15,13 @@ export default function VariationItem({ variation }) {
       </div>
 
       {expanded && <div className="mt-4"><FretboardDiagram diagram={variation.diagram} tab={variation.tab} /></div>}
+      <button
+
+        onClick={() => setCurrCord({"name": chord.name, "tab": chord.tab, "variation": variation.type})}
+        className="mt-2 px-4 py-2 bg-[#1F8AAD] text-white rounded-lg hover:bg-[#166b86] transition"
+      >
+        Select Chord
+      </button>
     </div>
   );
 }

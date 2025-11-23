@@ -21,8 +21,6 @@ app.get('/', (req, res) => {
   res.send('Welcome to the API')
 })
 
-const upload = multer({ storage: multer.memoryStorage() });
-
 app.post('/analyze-frame', (req, res) => {
   const busboy = Busboy({ headers: req.headers });
   let fileBuffer = Buffer.alloc(0);

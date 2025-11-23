@@ -19,7 +19,7 @@ const sendToApi = async (imageBlob) => {
   setCapturedImage(imageDataUrl);
 };
 
-const captureAndSend = async (videoRef, canvasRef, setCapturedImage) => {
+const captureAndSend = async (videoRef, canvasRef, setCapturedImage, currCord) => {
   const video = videoRef.current;
   const canvas = canvasRef.current;
   if (!video || !canvas) return;
@@ -46,6 +46,7 @@ const captureAndSend = async (videoRef, canvasRef, setCapturedImage) => {
       try {
         const formData = new FormData();
         formData.append("image", blob, "captured-frame.jpeg");
+        formData.append("file", JSON.stringify(currCord))
 
         const response = await fetch("http://localhost:8000/analyze-frame", {
           method: "POST",
