@@ -121,3 +121,15 @@ def get_note_position(note, c1: Vector2, c2: Vector2, c3: Vector2, c4: Vector2, 
 
     # Otherwise assume it's already pixel coordinates — return as floats
     return Vector2(nx, ny)
+
+def get_chord_positions(chord_tab, c1: Vector2, c2: Vector2, c3: Vector2, c4: Vector2, string_count=STRING_COUNT, fret_count=FRET_COUNT + 1):
+    positions = []
+    for string, fret in enumerate(chord_tab, start=1):
+        if fret is "X":
+            continue  # skip muted strings
+        note = Vector2(string, int(fret))
+        pos = get_note_position(note, c1, c2, c3, c4, string_count, fret_count)
+        positions.append(pos)
+    return positions
+
+get_chord_positions()
