@@ -35,7 +35,6 @@ ENV/
 Thumbs.db
 
 # Project specific
-runs/
 *.jpg
 *.jpeg
 *.png
