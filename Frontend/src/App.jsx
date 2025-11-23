@@ -27,9 +27,10 @@ function App() {
           <Route path="/" element={<LandingPage />} />
           <Route path="/song-select" element={<SongPage />} />
           <Route path="/cam" element={<CamSetup />}/>
+          <Route path="/cam/:id" element={<CamSetup />}/>
           <Route path="/cam-chords" element={<CameraSetupChordsPage />}/>
 
-          <Route path="/sheet-view" element={<PlayingPage />}/>
+          <Route path="/sheet-view/:id" element={<PlayingPage />}/>
           <Route path="/chords" element={<ChordExplorerPage />}/>
 
         </Routes>

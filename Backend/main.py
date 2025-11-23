@@ -39,6 +39,8 @@ async def process_frame(frame: UploadFile = File(...),
     img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
 
     corners = get_fretboard_corners(img)
+    print("Received corners:", corners)
+
 
     if not corners:
         return {"error": "No fretboard corners detected."}

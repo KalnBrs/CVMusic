@@ -2,46 +2,86 @@ import cv2
 from ultralytics import YOLO
 import numpy as np
 from Vector2 import Vector2
+import os
 
-def get_fretboard_corners(img):
-    import os
+model = None
+
+
+def load_model():
+    global model
+
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    model_path = os.path.join(script_dir, "..", "runs", "pose", "fretboard_v19", "weights", "best.pt")
-    
+    model_path = os.path.join(script_dir, "..", "runs", "pose", "fretboard_v1", "weights", "best.pt")
+
     print(f"Loading model from: {model_path}")
+
     try:
         model = YOLO(model_path)
+        return model
+
     except Exception as e:
         print(f"Error loading model: {e}")
         print("Please check if the path is correct and the file exists.")
-        return
+        model = None
+        return None
+
+
+def get_fretboard_corners(img):
+    global model
+
+    # Load model if needed
+    if model is None:
+        model = load_model()
+        if model is None:
+            print("❌ Model failed to load.")
+            return None
 
     # Run inference
-        # conf=0.5: Only show detections with >50% confidence
-        # Force CPU because RTX 5060 is too new for current PyTorch CUDA binaries
-        results = model(img, conf=0.5, verbose=False, device='cpu')
+    results = model(img, conf=0.5, verbose=False, device="cpu")
 
-        # Visualize results
-        # plot() returns the image with boxes/keypoints drawn
-        annotated_frame = results[0].plot()
+    r = results[0]
 
-        # Optional: Custom drawing if you want to connect keypoints specifically
-        # The keypoints are in results[0].keypoints
-        # shape: (num_dets, 4, 3) -> (x, y, conf)
-        
-        if results[0].keypoints is not None and results[0].keypoints.data is not None:
-            kpts = results[0].keypoints.data.cpu().numpy()
-            if len(kpts) > 0:
-                # Assuming we want the corners of the first detected fretboard
-                kp_set = kpts[0]
-                # kp_set is (4, 3) -> (x, y, conf)
-                # 0: TL, 1: TR, 2: BR, 3: BL
-                if len(kp_set) == 4:
-                    points_vector2 = []
-                    for i in range(4):
-                        x, y, conf = kp_set[i]
-                        if conf > 0.5:  # Only include points with sufficient confidence
-                            points_vector2.append(Vector2(x, y))
-                    if len(points_vector2) == 4:
-                        return tuple(points_vector2)
-        return None  # Return None if no valid fretboard corners are found
+    print("\n--- DEBUG ---")
+    print("Detections:", len(r.boxes))
+    print("Keypoints object:", r.keypoints)
+
+    # No detections at all
+    if r.keypoints is None:
+        print("❌ No keypoints attribute in results.")
+        return None
+
+    if r.keypoints.data is None:
+        print("❌ Keypoints.data is None.")
+        return None
+
+    kpts = r.keypoints.data.cpu().numpy()
+
+    print("Keypoints array shape:", kpts.shape)
+    print("Raw keypoints:\n", kpts)
+
+    # No detected instances
+    if len(kpts) == 0:
+        print("❌ Model detected 0 objects.")
+        return None
+
+    kp_set = kpts[0]   # first detection
+
+    print("First detection keypoints:", kp_set)
+
+    if len(kp_set) != 4:
+        print("❌ Expected 4 keypoints, got", len(kp_set))
+        return None
+
+    points = []
+    for i, (x, y, conf) in enumerate(kp_set):
+        print(f"Keypoint {i}: x={x}, y={y}, conf={conf}")
+        if conf > 0.3:
+            points.append(Vector2(x, y))
+
+    if len(points) != 4:
+        print("❌ Not all 4 keypoints had conf > 0.5")
+        return None
+
+    print("✅ Returning 4 corners:", points)
+    return tuple(points)
+

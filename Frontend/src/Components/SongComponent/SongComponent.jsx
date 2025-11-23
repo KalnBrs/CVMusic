@@ -3,7 +3,8 @@ export default function SongComponent({
   author,
   time,
   difficulty,
-  img
+  img,
+  id
 }) {
   return (
     <div className="bg-white rounded-2xl shadow-md border border-[#D4EEF7] p-6 hover:shadow-lg hover:scale-[1.02] transition-all">
@@ -34,7 +35,7 @@ export default function SongComponent({
           </span>
         </div>
         <button className="bg-[#176782] px-3 py-2 rounded-2xl text-[#E9F7FB] hover:bg-[#26ACD9] transition duration-300 ease-in-out">
-          <a href="/cam">Play Song</a>
+          <a href={`/cam/${id}`}>Play Song</a>
         </button>
       </div>
     </div>
