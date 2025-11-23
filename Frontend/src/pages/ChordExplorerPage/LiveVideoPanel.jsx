@@ -11,6 +11,8 @@ export default function LiveVideoPanel({ currCord }) {
 
   const [currSpots, setCurrSpots] = useState([]); // always an array for easier drawing
   const [currCorners, setCurrCorners] = useState({}); // object with TL, TR, BL, BR
+  const [currFingers, setCurrFingers] = useState([]); // detected fingertips
+  const [verification, setVerification] = useState([]); // verification results
   const [capturedImage, setCapturedImage] = useState(null);
   const [isActive, setIsActive] = useState(false);
   const [status, setStatus] = useState("Idle");
@@ -94,18 +96,43 @@ export default function LiveVideoPanel({ currCord }) {
 
     ctx.clearRect(0, 0, overlay.width, overlay.height);
 
+    // Draw detected fingers (small cyan dots)
+    if (Array.isArray(currFingers)) {
+      currFingers.forEach((finger) => {
+        const x = finger.x ?? finger.X ?? finger[0];
+        const y = finger.y ?? finger.Y ?? finger[1];
+        if (x == null || y == null || Number.isNaN(x) || Number.isNaN(y)) return;
+
+        const radius = Math.max(3, Math.round(Math.min(overlay.width, overlay.height) * 0.008));
+        ctx.beginPath();
+        ctx.arc(x, y, radius, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(0, 255, 255, 0.8)";
+        ctx.fill();
+        ctx.strokeStyle = "rgba(0, 0, 0, 0.5)";
+        ctx.stroke();
+      });
+    }
+
     // Draw notes
     if (Array.isArray(currSpots)) {
-      currSpots.forEach((spot) => {
+      currSpots.forEach((spot, index) => {
         let x = null, y = null;
         if (Array.isArray(spot) && spot.length >= 2) [x, y] = spot;
         else if (spot && typeof spot === "object") x = spot.x ?? spot.X ?? spot[0], y = spot.y ?? spot.Y ?? spot[1];
         if (x == null || y == null || Number.isNaN(x) || Number.isNaN(y)) return;
 
         const radius = Math.max(6, Math.round(Math.min(overlay.width, overlay.height) * 0.012));
+        
+        // Determine color based on verification status
+        // verification[index] is True (correct), False (incorrect), or None (no target/muted)
+        let color = "rgba(255, 70, 70, 0.9)"; // Default Red
+        if (verification && verification[index] === true) {
+          color = "rgba(70, 255, 70, 0.9)"; // Green for correct
+        }
+
         ctx.beginPath();
         ctx.arc(x, y, radius, 0, Math.PI * 2);
-        ctx.fillStyle = "rgba(255, 70, 70, 0.9)";
+        ctx.fillStyle = color;
         ctx.fill();
         ctx.lineWidth = 2;
         ctx.strokeStyle = "white";
@@ -138,7 +165,7 @@ export default function LiveVideoPanel({ currCord }) {
         ctx.stroke();
       });
     }
-  }, [currSpots, currCorners]);
+  }, [currSpots, currCorners, currFingers, verification]);
 
   // --- Start sending frames ---
   const startSending = () => {
@@ -175,12 +202,18 @@ export default function LiveVideoPanel({ currCord }) {
           if (!data) {
             setCurrSpots([]);
             setCurrCorners({});
+            setCurrFingers([]);
+            setVerification([]);
           } else if (Array.isArray(data)) {
             setCurrSpots(data);
             setCurrCorners({});
+            setCurrFingers([]);
+            setVerification([]);
           } else {
             setCurrSpots(data.notes ?? []);
             setCurrCorners(data.corners ?? {});
+            setCurrFingers(data.detected_fingers ?? []);
+            setVerification(data.verification ?? []);
           }
 
           setFrameCount((c) => c + 1);
@@ -219,7 +252,24 @@ export default function LiveVideoPanel({ currCord }) {
     <div className="lg:col-span-2 bg-white p-6 rounded-2xl shadow-md border border-[#D4EEF7]">
       <h2 className="text-2xl font-semibold text-[#1F8AAD] mb-4 text-center">Live Guitar View</h2>
 
-      <div className="w-full aspect-video overflow-hidden rounded-xl bg-[#A8DEF0] relative">
+      <div className={`w-full aspect-video overflow-hidden rounded-xl bg-[#A8DEF0] relative transition-all duration-300 ${
+        verification.length > 0 && verification.some(v => v === true) && !verification.some(v => v === false) 
+          ? "border-4 border-green-500 shadow-[0_0_20px_rgba(34,197,94,0.6)]" 
+          : ""
+      }`}>
+        
+        {/* Success Overlay */}
+        {verification.length > 0 && verification.some(v => v === true) && !verification.some(v => v === false) && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/30 z-10 animate-in fade-in duration-200">
+            <div className="bg-green-500 text-white p-6 rounded-full shadow-2xl animate-bounce mb-4">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={4} d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <h2 className="text-4xl font-bold text-white drop-shadow-lg animate-pulse">Excellent!</h2>
+          </div>
+        )}
+
         <video
           ref={videoRef}
           className="w-full h-full object-cover"

@@ -5,8 +5,13 @@ import numpy as np
 import json
 from FretboardDetection.GetFretboardCorners import get_fretboard_corners
 from NotePositions.GetNotePosition import get_chord_positions
+from HandDetection.FingerDetector import FingerDetector
+from Verification.Verifier import verify_chord_placement
 
 app = FastAPI()
+
+# Initialize Finger Detector
+finger_detector = FingerDetector()
 
 app.add_middleware(
     CORSMiddleware,
@@ -24,7 +29,7 @@ def preprocess_image(file_bytes):
     if len(img.shape) == 2:
         img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
     elif img.shape[2] == 4:
-        img = cv2.cvtColor(img, cv2.COLOR_RGBA2RGB)
+        img = cv2.cvtColor(img, cv2.COLOR_BGRA2BGR)
 
     img = img.astype(np.uint8)
     img = cv2.resize(img, (640, 480))
@@ -75,7 +80,40 @@ async def process_frame(frame: UploadFile = File(...), chord_tab: str = Form(Non
         except Exception:
             notes.append(None)
 
-    return {"notes": notes, "corners": corners}
+    # Detect Fingertips
+    fingertips_raw = finger_detector.detect(img)
+    
+    # Filter fingertips based on fretboard region
+    # Define a polygon from corners: TL -> TR -> BR -> BL
+    # corners_raw is tuple of Vector2: 0=TL, 1=TR, 2=BL, 3=BR (Wait, check GetFretboardCorners return order)
+    # get_fretboard_corners returns tuple(points). Let's check what points is.
+    # It sorts them? Usually Y-sorted or X-sorted.
+    # In main.py: 
+    # "TL": corners_raw[0], "TR": corners_raw[1], "BL": corners_raw[2], "BR": corners_raw[3]
+    # This assumes a specific order. Let's assume the Polygon is 0 -> 1 -> 3 -> 2 (TL -> TR -> BR -> BL)
+    
+    fretboard_poly = np.array([
+        [corners_raw[0].x, corners_raw[0].y], # TL
+        [corners_raw[1].x, corners_raw[1].y], # TR
+        [corners_raw[3].x, corners_raw[3].y], # BR
+        [corners_raw[2].x, corners_raw[2].y]  # BL
+    ], dtype=np.int32)
+
+    fingertips_list = []
+    for ft in fingertips_raw:
+        # Measure distance to polygon. Positive = inside, Negative = outside.
+        # Allow a margin of 50 pixels around the fretboard
+        dist = cv2.pointPolygonTest(fretboard_poly, (float(ft[0]), float(ft[1])), True)
+        if dist >= -50.0: 
+            fingertips_list.append(ft)
+
+    # Convert to dict for JSON response
+    detected_fingers = [{"x": x, "y": y} for x, y in fingertips_list]
+
+    # Verify Placement
+    verification = verify_chord_placement(notes, fingertips_list)
+
+    return {"notes": notes, "corners": corners, "detected_fingers": detected_fingers, "verification": verification}
 
 if __name__ == "__main__":
     import uvicorn
