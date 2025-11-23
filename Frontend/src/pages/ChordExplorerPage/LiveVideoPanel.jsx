@@ -42,6 +42,7 @@ export default function LiveVideoPanel({currCord}) {
       setStatus("Sending...");
       try {
         const response = await captureAndSend(videoRef, canvasRef, setCapturedImage, currCord);
+        console.log("Positions:", response);
         if (response?.status === 200) {
           setStatus("Received ✅");
           setCount(testCounter + 1)
