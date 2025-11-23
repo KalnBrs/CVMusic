@@ -8,15 +8,18 @@ app.use(cors({
   credentials: true,
 }))
 
-const songRoute = require('./Routes/song')
-const chordRoute = require('./Routes/chord')
+// const songRoute = require('./Routes/song')
+// const chordRoute = require('./Routes/chord')
 
 app.get('/', (req, res) => {
   res.send('Welcome to the API')
 })
 
 app.post('/analyze-frame', (req, res) => {
-  // calls the cord analyze
+  // Takes in a jpeg for the photo
+  // Takes in a cord object
+  // calls the cord analyze api from python
+  console.log(req.body);
 })
 
 module.exports = app

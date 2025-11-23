@@ -1,10 +1,10 @@
-const express = require('express');
+// const express = require('express');
 
-const router = express.Router();
-router.use(express.json())
+// const router = express.Router();
+// router.use(express.json())
 
-router.get('/', (req, res) => {
-  // Get one song
-})
+// router.get('/', (req, res) => {
+//   // Get one song
+// })
 
-module.exports = router;
+// module.exports = router;
