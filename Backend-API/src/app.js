@@ -23,13 +23,16 @@ app.get('/', (req, res) => {
 
 app.post('/analyze-frame', (req, res) => {
   const busboy = Busboy({ headers: req.headers });
+
   let fileBuffer = Buffer.alloc(0);
   let filename = '';
+  let chordTab = null; // Will store chord tab from frontend
 
+  // Handle files
   busboy.on('file', (fieldname, file, info) => {
     filename = info.filename;
 
-    file.on('data', (chunk) => {
+    file.on('data', chunk => {
       fileBuffer = Buffer.concat([fileBuffer, chunk]);
     });
 
@@ -38,18 +41,26 @@ app.post('/analyze-frame', (req, res) => {
     });
   });
 
+  // Handle fields
+  busboy.on('field', (fieldname, val) => {
+    if (fieldname === 'file') { // Make sure the frontend uses this key
+      try {
+        chordTab = JSON.parse(val); // Convert JSON string to array/object
+        console.log("Received chord tab:", chordTab);
+      } catch (err) {
+        console.error("Invalid chord tab JSON:", val);
+      }
+    }
+  });
+
   busboy.on('finish', async () => {
     try {
-      // Wrap buffer in readable stream
-      const { Readable } = require('stream');
       const stream = Readable.from(fileBuffer);
 
-      // Prepare form-data for Python API
       const formData = new FormData();
-      formData.append('frame', stream, { filename: filename });
-      formData.append('chord_tab', JSON.stringify(["0", "2", "2", "1", "0", "0"])); // Example chord tab, modify as needed
+      formData.append('frame', stream, { filename });
+      formData.append('chord_tab', JSON.stringify(chordTab)); // Use the received chord tab
 
-      // Send to Python API
       const response = await axios.post(
         'http://localhost:3000/api/process_frame',
         formData,
@@ -65,5 +76,6 @@ app.post('/analyze-frame', (req, res) => {
 
   req.pipe(busboy);
 });
+
 
 module.exports = app

@@ -17,7 +17,7 @@ export default function VariationItem({ variation, chord, setCurrCord }) {
       {expanded && <div className="mt-4"><FretboardDiagram diagram={variation.diagram} tab={variation.tab} /></div>}
       <button
 
-        onClick={() => setCurrCord({"name": chord.name, "tab": chord.tab, "variation": variation.type})}
+        onClick={() => setCurrCord({"name": chord.name, "tab": variation.tab, "variation": variation.type})}
         className="mt-2 px-4 py-2 bg-[#1F8AAD] text-white rounded-lg hover:bg-[#166b86] transition"
       >
         Select Chord

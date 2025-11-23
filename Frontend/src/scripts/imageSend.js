@@ -46,9 +46,9 @@ const captureAndSend = async (videoRef, canvasRef, setCapturedImage, currCord) =
       try {
         const formData = new FormData();
         formData.append("image", blob, "captured-frame.jpeg");
-        formData.append("file", JSON.stringify(currCord))
+        formData.append("file", JSON.stringify(currCord.tab))
 
-        const response = await fetch("http://ec2-54-91-59-31.compute-1.amazonaws.com:8000/analyze-frame", {
+        const response = await fetch("http://localhost:8000/analyze-frame", {
           method: "POST",
           body: formData
         });

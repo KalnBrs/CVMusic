@@ -5,6 +5,7 @@ import numpy as np
 import base64
 from NotePositions.Vector2 import Vector2
 from NotePositions.GetNotePosition import get_chord_positions
+import json
 
 app = FastAPI()
 
@@ -18,10 +19,19 @@ app.add_middleware(
 
 @app.post("/api/process_frame")
 async def process_frame(frame: UploadFile = File(...),
-    chord_tab: str = Form(None)):
+                        chord_tab: str = Form(None)):
     
     print("Received file:", frame.filename)
     print("Received chord tab:", chord_tab)
+
+    # Convert chord_tab string to list
+    if chord_tab is None:
+        chord_tab_list = []
+    else:
+        try:
+            chord_tab_list = json.loads(chord_tab)
+        except json.JSONDecodeError:
+            return {"error": "Invalid chord_tab format, must be JSON list of frets."}
 
     data = await frame.read()
     nparr = np.frombuffer(data, np.uint8)
@@ -34,20 +44,23 @@ async def process_frame(frame: UploadFile = File(...),
     c4 = Vector2(520, 400)
 
     # Get note positions for the chord
-    notes = get_chord_positions(chord_tab, c1, c2, c3, c4)
+    notes = get_chord_positions(chord_tab_list, c1, c2, c3, c4)
+
+    print(notes)
 
     positions = []
     for note in notes:
+        if note is None:
+            positions.append(None)
+            continue
         if hasattr(note, "x") and hasattr(note, "y"):
             x, y = note.x, note.y
         elif isinstance(note, (list, tuple, np.ndarray)) and len(note) >= 2:
             x, y = note[0], note[1]
         else:
+            positions.append(None)
             continue
-        try:
-            positions.append({"x": int(round(float(x))), "y": int(round(float(y)))})
-        except Exception:
-            continue
+        positions.append({"x": int(round(float(x))), "y": int(round(float(y)))})
 
     return {"notes": positions}
 

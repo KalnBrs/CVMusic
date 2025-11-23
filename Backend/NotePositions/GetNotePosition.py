@@ -122,16 +122,23 @@ def get_note_position(note, c1: Vector2, c2: Vector2, c3: Vector2, c4: Vector2, 
 def get_chord_positions(chord_tab, c1: Vector2, c2: Vector2, c3: Vector2, c4: Vector2):
     positions = []
     for string_index, fret in enumerate(chord_tab):
+        if fret.lower() == "x":
+            # muted string → append None
+            positions.append(None)
+            continue
+
         try:
             fret_num = int(fret)
         except ValueError:
-            continue  # skip non-integer frets (e.g., "x" for muted strings)
+            positions.append(None)
+            continue
 
-        string_num = STRING_COUNT - string_index  # Convert to 1-based string number
+        string_num = STRING_COUNT - string_index  # 1-based string number
         note_pos = get_note_position(Vector2(string_num, fret_num), c1, c2, c3, c4)
         positions.append(note_pos)
 
     return positions
+
 
     # Otherwise assume it's already pixel coordinates — return as floats
     return Vector2(nx, ny)
