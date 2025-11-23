@@ -44,7 +44,7 @@ export default function SongPage() {
 
       {/* Search + Filters */}
       <div className="flex max-w-3xl mx-auto bg-white p-6 rounded-2xl shadow-md border border-[#D4EEF7] mb-10 flex-row justify-between">
-        <div className="mb-6 w-120 justify-self-start">
+        <div className="mb-6 w-full justify-self-start">
           <p className="text-lg font-medium text-[#1F8AAD] mb-2 pl-2">
             Search Songs:
           </p>
@@ -54,13 +54,6 @@ export default function SongPage() {
             className="w-full px-4 py-3 rounded-xl border border-[#BEE4F3] bg-[#F5FBFD] focus:outline-none focus:ring-2 focus:ring-[#26ACD9] transition"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
-
-        <div className="justify-self-end">
-          <DropDown
-            name="Difficulty"
-            listOfOptions={["Any", "Easy", "Intermediate", "Hard"]}
           />
         </div>
       </div>
