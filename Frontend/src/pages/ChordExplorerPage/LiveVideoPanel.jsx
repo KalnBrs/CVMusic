@@ -10,6 +10,7 @@ export default function LiveVideoPanel({ currCord }) {
   const streamRef = useRef(null); // keep stream to stop on unmount
 
   const [currSpots, setCurrSpots] = useState([]); // always an array for easier drawing
+  const [currCorners, setCurrCorners] = useState({}); // object with TL, TR, BL, BR
   const [capturedImage, setCapturedImage] = useState(null);
   const [isActive, setIsActive] = useState(false);
   const [status, setStatus] = useState("Idle");
@@ -17,34 +18,26 @@ export default function LiveVideoPanel({ currCord }) {
 
   const FPS = 5; // throttled frames per second
 
-  // --- Initialize webcam safely, avoid AbortError by using onloadedmetadata ---
+  // --- Initialize webcam safely ---
   useEffect(() => {
     let mounted = true;
     async function startCamera() {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ video: true });
         if (!mounted) {
-          // somebody unmounted while promise resolved
           stream.getTracks().forEach((t) => t.stop());
           return;
         }
         streamRef.current = stream;
         const video = videoRef.current;
         if (!video) return;
-
-        // Only set srcObject if different (prevents repeated load/AbortErrors)
         if (video.srcObject !== stream) {
           video.srcObject = stream;
-          // wait until metadata loaded to call play()
           video.onloadedmetadata = () => {
-            // play() returns a promise; swallow expected AbortErrors and log others
             const p = video.play();
             if (p && typeof p.catch === "function") {
               p.catch((err) => {
-                // ignore AbortError that occurs when src changes quickly
-                if (err?.name !== "AbortError") {
-                  console.warn("Video play error:", err);
-                }
+                if (err?.name !== "AbortError") console.warn("Video play error:", err);
               });
             }
           };
@@ -58,12 +51,7 @@ export default function LiveVideoPanel({ currCord }) {
 
     return () => {
       mounted = false;
-      // stop interval if running
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-        intervalRef.current = null;
-      }
-      // stop camera tracks
+      if (intervalRef.current) clearInterval(intervalRef.current);
       if (streamRef.current) {
         streamRef.current.getTracks().forEach((t) => t.stop());
         streamRef.current = null;
@@ -81,15 +69,9 @@ export default function LiveVideoPanel({ currCord }) {
       overlay.height = video.videoHeight || overlay.clientHeight;
     }
 
-    // resize on metadata load (video size becomes available)
     const v = videoRef.current;
-    if (v) {
-      v.addEventListener("loadedmetadata", resizeOverlay);
-    }
-    // also on window resize
+    if (v) v.addEventListener("loadedmetadata", resizeOverlay);
     window.addEventListener("resize", resizeOverlay);
-
-    // initial attempt
     resizeOverlay();
 
     return () => {
@@ -98,86 +80,84 @@ export default function LiveVideoPanel({ currCord }) {
     };
   }, []);
 
-  // --- Draw currSpots on the overlay canvas ---
+  // --- Draw currSpots and currCorners on overlay ---
   useEffect(() => {
     const overlay = overlayRef.current;
     const video = videoRef.current;
     if (!overlay || !video) return;
 
-    // Ensure overlay matches video resolution
-    const width = video.videoWidth || overlay.clientWidth || 640;
-    const height = video.videoHeight || overlay.clientHeight || 480;
-    if (overlay.width !== width || overlay.height !== height) {
-      overlay.width = width;
-      overlay.height = height;
-    }
+    overlay.width = video.videoWidth || overlay.clientWidth || 640;
+    overlay.height = video.videoHeight || overlay.clientHeight || 480;
 
     const ctx = overlay.getContext("2d");
     if (!ctx) return;
 
-    // Clear previous drawings
     ctx.clearRect(0, 0, overlay.width, overlay.height);
 
-    // Defensive: ensure currSpots is an array
-    if (!Array.isArray(currSpots) || currSpots.length === 0) return;
+    // Draw notes
+    if (Array.isArray(currSpots)) {
+      currSpots.forEach((spot) => {
+        let x = null, y = null;
+        if (Array.isArray(spot) && spot.length >= 2) [x, y] = spot;
+        else if (spot && typeof spot === "object") x = spot.x ?? spot.X ?? spot[0], y = spot.y ?? spot.Y ?? spot[1];
+        if (x == null || y == null || Number.isNaN(x) || Number.isNaN(y)) return;
 
-    // Draw each point. Assumes points are in video pixel coordinates.
-    for (const spot of currSpots) {
-      // Spot format may vary (backend). Accept {x,y} or {X,Y} or [x,y]
-      let x = null;
-      let y = null;
+        const radius = Math.max(6, Math.round(Math.min(overlay.width, overlay.height) * 0.012));
+        ctx.beginPath();
+        ctx.arc(x, y, radius, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(255, 70, 70, 0.9)";
+        ctx.fill();
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = "white";
+        ctx.stroke();
 
-      if (Array.isArray(spot) && spot.length >= 2) {
-        [x, y] = spot;
-      } else if (spot && typeof spot === "object") {
-        x = spot.x ?? spot.X ?? spot[0];
-        y = spot.y ?? spot.Y ?? spot[1];
-      }
-
-      // If still invalid, skip
-      if (x == null || y == null || Number.isNaN(x) || Number.isNaN(y)) continue;
-
-      // Draw a nice circle + label
-      const radius = Math.max(6, Math.round(Math.min(overlay.width, overlay.height) * 0.012));
-      ctx.beginPath();
-      ctx.arc(x, y, radius, 0, Math.PI * 2);
-      ctx.fillStyle = "rgba(255, 70, 70, 0.9)";
-      ctx.fill();
-      ctx.lineWidth = 2;
-      ctx.strokeStyle = "white";
-      ctx.stroke();
-
-      // optional: label index
-      if (spot.label || spot.idx != null) {
-        ctx.font = `${Math.max(12, Math.round(radius * 0.9))}px sans-serif`;
-        ctx.fillStyle = "white";
-        const label = spot.label ?? spot.idx ?? "";
-        ctx.fillText(label, x + radius + 4, y + radius / 2);
-      }
+        if (spot.label || spot.idx != null) {
+          ctx.font = `${Math.max(12, Math.round(radius * 0.9))}px sans-serif`;
+          ctx.fillStyle = "white";
+          const label = spot.label ?? spot.idx ?? "";
+          ctx.fillText(label, x + radius + 4, y + radius / 2);
+        }
+      });
     }
-  }, [currSpots]);
 
-  // --- start sending frames to backend at FPS ---
+    // Draw corners
+    if (currCorners && typeof currCorners === "object") {
+      Object.values(currCorners).forEach((corner) => {
+        if (!corner) return;
+        const x = corner.x ?? corner.X ?? corner[0];
+        const y = corner.y ?? corner.Y ?? corner[1];
+        if (x == null || y == null || Number.isNaN(x) || Number.isNaN(y)) return;
+
+        const radius = Math.max(6, Math.round(Math.min(overlay.width, overlay.height) * 0.012));
+        ctx.beginPath();
+        ctx.arc(x, y, radius, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(70, 255, 70, 0.9)";
+        ctx.fill();
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = "white";
+        ctx.stroke();
+      });
+    }
+  }, [currSpots, currCorners]);
+
+  // --- Start sending frames ---
   const startSending = () => {
-    if (intervalRef.current) return; // already running
+    if (intervalRef.current) return;
     setIsActive(true);
     setStatus("Sending...");
 
     intervalRef.current = setInterval(async () => {
-      if (isSendingRef.current) return; // previous frame still processing
+      if (isSendingRef.current) return;
       isSendingRef.current = true;
       setStatus("Sending...");
 
       try {
-        // Defensive: do not call backend if video not ready
         if (!videoRef.current || !captureRef.current) {
           setStatus("Idle");
           return;
         }
 
-        // Ensure currCord exists — captureAndSend should handle nulls but be defensive
         const response = await captureAndSend(videoRef, captureRef, setCapturedImage, currCord);
-
         if (!response) {
           setStatus("Error ❌");
           return;
@@ -185,33 +165,24 @@ export default function LiveVideoPanel({ currCord }) {
 
         if (response.status === 200) {
           setStatus("Received ✅");
-
-          // Backend might return { notes: [...] } or an array directly
-          let positions = null;
+          let data = null;
           try {
-            positions = await response.json();
+            data = await response.json();
           } catch (err) {
-            console.warn("Failed to parse JSON from response:", err);
-            positions = null;
+            console.warn("Failed to parse JSON:", err);
           }
 
-          // Normalize the result to an array for currSpots
-          // If backend uses { notes: [...] } unwrap it
-          if (positions == null) {
+          if (!data) {
             setCurrSpots([]);
-          } else if (Array.isArray(positions)) {
-            setCurrSpots(positions);
-          } else if (Array.isArray(positions.notes)) {
-            setCurrSpots(positions.notes);
-          } else if (Array.isArray(positions.positions)) {
-            setCurrSpots(positions.positions);
+            setCurrCorners({});
+          } else if (Array.isArray(data)) {
+            setCurrSpots(data);
+            setCurrCorners({});
           } else {
-            // try to infer array-like keys (defensive)
-            setCurrSpots([]);
-            console.warn("Unexpected backend response shape for positions:", positions);
+            setCurrSpots(data.notes ?? []);
+            setCurrCorners(data.corners ?? {});
           }
 
-          // increment counter using functional update (avoid stale closure)
           setFrameCount((c) => c + 1);
         } else {
           setStatus("Error ❌");
@@ -235,13 +206,11 @@ export default function LiveVideoPanel({ currCord }) {
     setStatus("Idle");
   };
 
-  // Optional: clean captured image URL on unmount/update
+  // --- Cleanup captured image URL ---
   useEffect(() => {
     return () => {
       if (capturedImage && typeof capturedImage === "string") {
-        try {
-          URL.revokeObjectURL(capturedImage);
-        } catch (_) {}
+        try { URL.revokeObjectURL(capturedImage); } catch (_) {}
       }
     };
   }, [capturedImage]);
@@ -259,9 +228,7 @@ export default function LiveVideoPanel({ currCord }) {
           muted
           playsInline
         />
-        {/* hidden capture canvas (used by captureAndSend) */}
         <canvas ref={captureRef} style={{ display: "none" }} />
-        {/* overlay canvas on top of video for drawing points */}
         <canvas
           ref={overlayRef}
           className="absolute top-0 left-0 w-full h-full pointer-events-none"
@@ -309,12 +276,7 @@ export default function LiveVideoPanel({ currCord }) {
             src={capturedImage}
             alt="Captured frame"
             className="w-full rounded-xl shadow-md"
-            onLoad={() => {
-              // revoke after load (safe)
-              try {
-                URL.revokeObjectURL(capturedImage);
-              } catch (_) {}
-            }}
+            onLoad={() => { try { URL.revokeObjectURL(capturedImage); } catch (_) {} }}
             style={{ transform: "scaleX(-1)" }}
           />
         </div>

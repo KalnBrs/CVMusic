@@ -11,7 +11,7 @@ def load_model():
     global model
 
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    model_path = os.path.join(script_dir, "..", "runs", "pose", "fretboard_v1", "weights", "best.pt")
+    model_path = os.path.join(script_dir, "..", "runs", "pose", "fretboard_v2_small_aug2", "weights", "best.pt")
 
     print(f"Loading model from: {model_path}")
 
@@ -37,11 +37,13 @@ def get_fretboard_corners(img):
             return None
 
     # Run inference
-    results = model(img, conf=0.5, verbose=False, device="cpu")
+    results = model(img, conf=0.3, verbose=False)
 
+    
     r = results[0]
 
     print("\n--- DEBUG ---")
+    print("Results", results)
     print("Detections:", len(r.boxes))
     print("Keypoints object:", r.keypoints)
 

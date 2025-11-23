@@ -46,7 +46,7 @@ def render_tab(c1: Vector2, c2: Vector2, c3: Vector2, c4: Vector2, notes):
     return image
 """
 
-def get_note_position(note, c1: Vector2, c2: Vector2, c3: Vector2, c4: Vector2, string_count=STRING_COUNT, fret_count=FRET_COUNT + 1):
+def get_note_position(note, c1: Vector2, c2: Vector2, c3: Vector2, c4: Vector2, string_count=STRING_COUNT, fret_count=FRET_COUNT):
     """
     Map a (string, fret) to a point on the warped quad using real guitar fret spacing.
     Ensure string positions are not on the left/right edges and fret positions are not on
@@ -64,7 +64,7 @@ def get_note_position(note, c1: Vector2, c2: Vector2, c3: Vector2, c4: Vector2, 
         raise ValueError("note must be a Vector2 pixel coordinate or a 'string_fret' string")
 
     nx = float(note.x)
-    ny = float(note.y + 1)  # shift fret by +1 to match physical fret numbering
+    ny = float(note.y)  # shift fret by +1 to match physical fret numbering
 
     # Heuristic: treat as logical (string,fret) when values are in expected ranges
     if -0.5 <= nx <= (string_count + 0.5) and -0.5 <= ny <= (fret_count + 0.5):
@@ -122,7 +122,7 @@ def get_note_position(note, c1: Vector2, c2: Vector2, c3: Vector2, c4: Vector2, 
 def get_chord_positions(chord_tab, c1: Vector2, c2: Vector2, c3: Vector2, c4: Vector2):
     positions = []
     for string_index, fret in enumerate(chord_tab):
-        if fret.lower() == "x":
+        if fret.lower() == "x" or int(fret) == 0:
             # muted string → append None
             positions.append(None)
             continue
