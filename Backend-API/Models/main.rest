@@ -1,4 +1,4 @@
-GET http://ec2-54-91-59-31.compute-1.amazonaws.com:8000
+GET http://ec2-54-91-59-31.compute-1.amazonaws.com:8000/api/songs
 
 POST http://ec2-54-91-59-31.compute-1.amazonaws.com:8000/analyze-frame
 {
@@ -7,6 +7,6 @@ POST http://ec2-54-91-59-31.compute-1.amazonaws.com:8000/analyze-frame
     "name": "c",
     "type": "major",
     "tab": ["2", "3", "2", "0", "X", "X"],
-    
+
   }
 }
