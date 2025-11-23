@@ -48,11 +48,12 @@ app.post('/analyze-frame', (req, res) => {
 
       // Prepare form-data for Python API
       const formData = new FormData();
-      formData.append('file', stream, { filename });
+      formData.append('frame', stream, { filename: filename });
+      formData.append('chord_tab', JSON.stringify(["0", "2", "2", "1", "0", "0"])); // Example chord tab, modify as needed
 
       // Send to Python API
       const response = await axios.post(
-        'http://localhost:8000/analyze-frame',
+        'http://localhost:3000/api/process_frame',
         formData,
         { headers: formData.getHeaders() }
       );

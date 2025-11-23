@@ -1,5 +1,6 @@
 from PIL import Image, ImageDraw
-from Vector2 import Vector2
+from NotePositions.Vector2 import Vector2
+
 
 TAB_COLOR = (200, 200, 200)  # Light gray
 FRET_COUNT = 20
@@ -117,6 +118,20 @@ def get_note_position(note, c1: Vector2, c2: Vector2, c3: Vector2, c4: Vector2, 
         py = (one_u * one_v) * c1.y + (u * one_v) * c2.y + (one_u * v) * c3.y + (u * v) * c4.y
 
         return Vector2(px, py)
+    
+def get_chord_positions(chord_tab, c1: Vector2, c2: Vector2, c3: Vector2, c4: Vector2):
+    positions = []
+    for string_index, fret in enumerate(chord_tab):
+        try:
+            fret_num = int(fret)
+        except ValueError:
+            continue  # skip non-integer frets (e.g., "x" for muted strings)
+
+        string_num = STRING_COUNT - string_index  # Convert to 1-based string number
+        note_pos = get_note_position(Vector2(string_num, fret_num), c1, c2, c3, c4)
+        positions.append(note_pos)
+
+    return positions
 
     # Otherwise assume it's already pixel coordinates — return as floats
     return Vector2(nx, ny)
