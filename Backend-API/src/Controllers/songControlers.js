@@ -2,7 +2,7 @@ const pool = require('../Config/db')
 
 const findSongId = async (req, res, next, value) => {
   try {
-    const result = await pool.query('SELECT * FROM songs WHERE song_id = $1', [value])
+    const result = await pool.query('SELECT * FROM songs WHERE id = $1', [value])
     if (result.rows.length === 0) return res.sendStatus(404)
     req.song = result.rows[0]
     next()
