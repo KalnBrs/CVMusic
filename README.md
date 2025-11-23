@@ -77,10 +77,45 @@ To visualize a song from the database onto the static reference image:
 python visualize_db_song.py
 ```
 
-#### 🌐 API Server (Coming Soon)
+## 🏋️ Training the Fretboard Model (YOLOv8 Pose)
+
+If you have a GPU (NVIDIA is best, but Mac M1/M2 works too), you can train the Keypoint Detection model.
+
+### 1. Install Additional Dependencies
 ```bash
-python api_server.py
+pip install ultralytics labelme
 ```
+
+### 2. Data Preparation
+1.  Put your training videos in `Backend/` (e.g., `guitar_train.mp4`).
+2.  Run the dataset preparation script to extract frames:
+    ```bash
+    python prepare_dataset.py
+    ```
+    *(This creates `datasets/images/train` and `datasets/images/val`)*
+
+### 3. Annotation (Labelme)
+1.  Run `labelme` in your terminal.
+2.  Open `Backend/datasets/images/train`.
+3.  **Annotate following this STRICT order**:
+    -   Draw a **Rectangle** around the fretboard -> Label: `fretboard`
+    -   Create **Points** in this exact order:
+        1.  **Top-Left (TL)**: Headstock - Thick String
+        2.  **Top-Right (TR)**: Headstock - Thin String
+        3.  **Bottom-Right (BR)**: Body - Thin String
+        4.  **Bottom-Left (BL)**: Body - Thick String
+    -   Save the JSON file.
+
+### 4. Convert Data & Train
+1.  **Convert Labelme JSON to YOLO TXT**:
+    ```bash
+    python convert_labelme_to_yolo.py
+    ```
+2.  **Start Training**:
+    ```bash
+    python train_yolo_pose.py
+    ```
+    *(Results will be saved in `runs/pose/fretboard_v1/weights/best.pt`)*
 
 ## 📂 Project Structure
 
@@ -90,6 +125,7 @@ python api_server.py
 - **`mediapipe_finger_detection.py`**: Wrapper for Google's MediaPipe Hands.
 - **`grid_detection.py`**: Algorithms for detecting strings and frets.
 - **`reference_grid.json`**: Calibration data for the guitar neck.
+- **`train_yolo_pose.py`**: Script to train the Keypoint Detection model.
 
 ## 🛠 Troubleshooting
 

@@ -1,0 +1,12 @@
+path: . # dataset root dir (relative to where train command is run)
+train: datasets/images/train
+val: datasets/images/val
+
+# Keypoints configuration
+kpt_shape: [4, 3] # [number of keypoints, number of dim] (x, y, visible)
+flip_idx: [1, 0, 3, 2] # Left-Right flip index (if we use data augmentation) 
+# TL(0) <-> TR(1), BL(3) <-> BR(2) (Assuming symmetrical flip)
+
+names:
+  0: fretboard
+
