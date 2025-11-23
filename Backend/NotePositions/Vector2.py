@@ -6,5 +6,5 @@ class Vector2:
         self.y = y
     
     @staticmethod
-    def magnitude(a: Vector2, b: Vector2) -> float:
+    def magnitude(a: "Vector2", b: "Vector2") -> float:
         return ((b.x - a.x) ** 2 + (b.y - a.y) ** 2) ** 0.5
