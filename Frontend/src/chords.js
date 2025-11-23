@@ -94,9 +94,9 @@ const chords = [
   {
     name: "B",
     variations: [
-      { type: "Major (barre)", tab: ["2", "4", "4", "4", "2", "X"], diagram: [{ string: 1, fret: 2 }, { string: 2, fret: 4 }, { string: 3, fret: 4 }, { string: 4, fret: 4 }, { string: 5, fret: 2 }] },
-      { type: "Minor (barre)", tab: ["2", "3", "4", "4", "2", "X"], diagram: [{ string: 1, fret: 2 }, { string: 2, fret: 3 }, { string: 3, fret: 4 }, { string: 4, fret: 4 }, { string: 5, fret: 2 }] },
-      { type: "7", tab: ["2", "4", "2", "4", "2", "X"], diagram: [{ string: 1, fret: 2 }, { string: 2, fret: 4 }, { string: 3, fret: 2 }, { string: 4, fret: 4 }, { string: 5, fret: 2 }] }
+      { type: "Major (barre)", tab: ["X", "2", "4", "4", "4", "2"], diagram: [{ string: 1, fret: 2 }, { string: 2, fret: 4 }, { string: 3, fret: 4 }, { string: 4, fret: 4 }, { string: 5, fret: 2 }] },
+      { type: "Minor (barre)", tab: ["X", "2", "3", "4", "4", "2"], diagram: [{ string: 1, fret: 2 }, { string: 2, fret: 3 }, { string: 3, fret: 4 }, { string: 4, fret: 4 }, { string: 5, fret: 2 }] },
+      { type: "7", tab: ["X", "2", "4", "2", "4", "2"], diagram: [{ string: 1, fret: 2 }, { string: 2, fret: 4 }, { string: 3, fret: 2 }, { string: 4, fret: 4 }, { string: 5, fret: 2 }] }
     ]
   },
 
@@ -106,9 +106,9 @@ const chords = [
   {
     name: "Power Chords",
     variations: [
-      { type: "C5", tab: ["X", "3", "5", "5", "X", "X"], diagram: [{ string: 2, fret: 3 }, { string: 3, fret: 5 }, { string: 4, fret: 5 }] },
-      { type: "D5", tab: ["X", "5", "7", "7", "X", "X"], diagram: [{ string: 2, fret: 5 }, { string: 3, fret: 7 }, { string: 4, fret: 7 }] },
-      { type: "E5", tab: ["0", "2", "2", "1", "X", "X"], diagram: [{ string: 1, fret: 0 }, { string: 2, fret: 2 }, { string: 3, fret: 2 }, { string: 4, fret: 1 }] }
+      { type: "C5", tab: ["X", "X", "3", "5", "5", "X"], diagram: [{ string: 2, fret: 3 }, { string: 3, fret: 5 }, { string: 4, fret: 5 }] },
+      { type: "D5", tab: ["X", "X", "5", "7", "7", "X"], diagram: [{ string: 2, fret: 5 }, { string: 3, fret: 7 }, { string: 4, fret: 7 }] },
+      { type: "E5", tab: ["0", "2", "2", "X", "X", "X"], diagram: [{ string: 1, fret: 0 }, { string: 2, fret: 2 }, { string: 3, fret: 2 }, { string: 4, fret: 1 }] }
     ]
   }
 ];
