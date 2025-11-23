@@ -11,7 +11,7 @@ def load_model():
     global model
 
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    model_path = os.path.join(script_dir, "..", "runs", "pose", "fretboard_v2_small_aug2", "weights", "best.pt")
+    model_path = os.path.join(script_dir, "..", "runs", "pose", "fretboard_v2_small_aug2_65", "weights", "best.pt")
 
     print(f"Loading model from: {model_path}")
 
