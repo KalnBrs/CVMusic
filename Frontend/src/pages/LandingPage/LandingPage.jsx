@@ -15,9 +15,15 @@ export default function LandingPage() {
       Learn guitar with <span className="text-[#1F8AAD] font-semibold">real-time AI feedback</span>, live finger tracking, and synced music sheets.
     </p>
 
-    <button className="bg-linear-to-r from-[#26ACD9] to-[#00D4FF] text-white text-lg font-medium px-10 py-3 rounded-full shadow-lg hover:opacity-90 active:scale-95 transition-all">
-      <a href="/song-select">Start Playing ▶</a>
-    </button>
+    <div className="flex flex-row gap-10">
+      <button className="bg-linear-to-r from-[#26ACD9] to-[#00D4FF] text-white text-lg font-medium px-10 py-3 rounded-full shadow-lg hover:opacity-90 active:scale-95 transition-all">
+        <a href="/song-select">Start Playing ▶</a>
+      </button>
+      <button className="bg-linear-to-r from-[#00D4FF] to-[#26ACD9] text-white text-lg font-medium px-10 py-3 rounded-full shadow-lg hover:opacity-90 active:scale-95 transition-all">
+        <a href="/cam-chords">Open Chords ▶</a>
+      </button>
+    </div>
   </div>
+
   );
 }
