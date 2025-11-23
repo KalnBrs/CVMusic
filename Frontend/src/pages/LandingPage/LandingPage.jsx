@@ -1,4 +1,21 @@
+import { useEffect } from "react";
+
 export default function LandingPage() {
+  useEffect(() => {
+    const init = async () => {
+      try {
+        const res = await fetch('http://ec2-54-91-59-31.compute-1.amazonaws.com:8000');
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const contentType = res.headers.get('content-type') || '';
+        const data = contentType.includes('application/json') ? await res.json() : await res.text();
+        console.log('Fetched data:', data);
+      } catch (err) {
+        console.error('Fetch error:', err);
+      }
+    };
+    init()
+  }, [])
+
   return (
   <div className="min-h-screen bg-[#E9F7FB] text-black flex flex-col items-center px-6 py-20">
     <h1 className="text-6xl font-extrabold bg-linear-to-r from-[#26ACD9] to-[#00D4FF] bg-clip-text text-transparent mb-10">
