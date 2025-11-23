@@ -17,7 +17,8 @@ const getAllSongs = async (req, res) => {
     const result = await pool.query('SELECT * FROM songs;')
     if (result.rows.length === 0) return res.status(404).send(' No Games ')
     res.json(result.rows[0])
-  } catch {
+  } catch (err) {
+    console.log(err)
     res.sendStatus(500)
   }
 }
