@@ -14,7 +14,8 @@ app.use(cors({
   credentials: true,
 }))
 
-// const songRoute = require('./Routes/song')
+const songRoute = require('./Routes/song')
+app.use("/api/songs", songRoute)
 // const chordRoute = require('./Routes/chord')
 
 app.get('/', (req, res) => {
